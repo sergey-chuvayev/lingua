@@ -7,3 +7,7 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .ocean-label{font-family:"DM Sans",sans-serif;font-size:8px;letter-spacing:2.4px;line-height:2;color:#849682;pointer-events:none;text-align:center;opacity:.65}
+
+.locale-switcher{display:flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid #d9dfd2;border-radius:6px;background:#fcfbf6;font-size:11px;font-weight:500;margin-left:auto;margin-right:10px}.locale-switcher button{padding:5px 8px;border-radius:4px;min-width:28px;text-align:center}.locale-switcher button.active{background:#e1ead7;color:#216c58}.locale-switcher button:not(.active):hover{color:var(--accent)}.locale-divider{color:#c4cfc1}
+@media(max-width:940px){.locale-switcher{margin-right:0}}
+@media(max-width:700px){.locale-switcher{position:absolute;top:18px;right:5%;margin:0;padding:5px 8px;font-size:10px}.locale-switcher button{padding:4px 6px;min-width:24px}.about-link{margin-left:0}}
