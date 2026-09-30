@@ -2,14 +2,16 @@ import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { colorFor, compact, percent, COLORS, LABELS, NO_DATA, ZERO_COLOR, type Boundaries, type Dataset, type Language, type Metric } from '../data'
+import { languageDisplayName, useI18n } from '../i18n'
 import { Icon } from './Icon'
 const WORLD: L.LatLngBoundsExpression = [[-57, -179], [80, 179]]
 export function WorldMap({boundaries, data, language, metric, selected, onSelect}: {boundaries: Boundaries; data: Dataset; language: Language; metric: Metric; selected: string | null; onSelect: (code: string) => void}) {
+  const { t, locale } = useI18n()
   const container = useRef<HTMLDivElement>(null)
   const map = useRef<L.Map | null>(null)
   const layer = useRef<L.GeoJSON | null>(null)
-  const live = useRef({language, metric, selected, onSelect})
-  live.current = {language, metric, selected, onSelect}
+  const live = useRef({language, metric, selected, onSelect, locale, t})
+  live.current = {language, metric, selected, onSelect, locale, t}
   useEffect(() => {
     if (!container.current) return
     const atlas = L.map(container.current, {crs: L.CRS.EPSG4326, zoomControl: false, attributionControl: false, scrollWheelZoom: false, zoomSnap: 0.25, zoomDelta: 0.5, minZoom: -2, maxZoom: 6, maxBounds: [[-90, -220], [90, 220]], maxBoundsViscosity: 0.7})
@@ -25,15 +27,15 @@ export function WorldMap({boundaries, data, language, metric, selected, onSelect
         const code = feature.properties.code
         const polygon = countryLayer as L.Path
         countryLayer.bindTooltip(() => {
-          const {language: current} = live.current
+          const {language: current, locale, t} = live.current
           const record = current.records[code]
           const content = document.createElement('div')
           const heading = document.createElement('strong')
           heading.textContent = data.countries[code]?.name ?? feature.properties.name
           const value = document.createElement('span')
-          value.textContent = record ? `≈ ${compact(record.speakers)} ${current.name} speakers · ${percent(record.percent)}` : `No ${current.name} estimate available`
+          value.textContent = record ? t('tooltipSpeakers', {count: compact(record.speakers), language: languageDisplayName(current.code, locale, current.name), percent: percent(record.percent)}) : t('tooltipNoEstimate', {language: languageDisplayName(current.code, locale, current.name)})
           const source = document.createElement('small')
-          source.textContent = 'Unicode CLDR 48.2 · Click to explore'
+          source.textContent = t('tooltipSource')
           content.append(heading, value, source)
           return content
         }, {sticky: true, className: 'country-tooltip', direction: 'top', offset: [0,-10]})
@@ -58,10 +60,10 @@ export function WorldMap({boundaries, data, language, metric, selected, onSelect
       polygon.closeTooltip()
       if (selected === code) polygon.bringToFront()
     })
-  }, [language, metric, selected])
-  return <section className="map-shell" aria-label={`${language.name} speaker map`}>
+  }, [language, metric, selected, locale])
+  return <section className="map-shell" aria-label={t('speakerMap', {language: languageDisplayName(language.code, locale, language.name)})}>
     <div ref={container} className="map" aria-label="Interactive world map. Drag to pan; use zoom controls. Country data is also available in the country list."/>
-    <div className="map-caption"><span className="live-dot"/>{language.name}<span className="caption-separator">/</span>WORLD VIEW</div>
+    <div className="map-caption"><span className="live-dot"/>{languageDisplayName(language.code, locale, language.name)}<span className="caption-separator">/</span>{t('worldView')}</div>
     <div className="map-controls"><button aria-label="Zoom in" onClick={() => map.current?.zoomIn()}>+</button><button aria-label="Zoom out" onClick={() => map.current?.zoomOut()}>−</button><button aria-label="Reset map view" onClick={() => map.current?.fitBounds(WORLD, {padding: [12,12]})}><Icon name="reset" size={17}/></button></div>
     <div className="legend"><div className="legend-heading"><strong>{metric === 'speakers' ? 'Estimated speakers' : 'Share of population'}</strong><span>{metric === 'speakers' ? 'Logarithmic bins' : 'Percentage bins'}</span></div><div className="legend-scale">{COLORS.map((color,i) => <div key={color}><span style={{background:color}}/><small>{LABELS[metric][i]}</small></div>)}</div><div className="legend-foot"><span><i style={{background:NO_DATA}}/>No estimate</span><span><i style={{background:ZERO_COLOR}}/>Reported zero</span><span className="legend-hint">Hover or select a country</span></div></div>
     <a className="map-attribution" href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Natural Earth</a>

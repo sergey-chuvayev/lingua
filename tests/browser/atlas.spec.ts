@@ -3,7 +3,7 @@ import {test, expect} from '@playwright/test'
 test('language search recolors map and keeps source-specific Chinese categories', async ({page}) => {
   const errors: string[] = []
   page.on('pageerror',error=>errors.push(error.message))
-  await page.goto('/')
+  await page.goto('/lingua/')
   await expect(page.getByRole('heading',{name:'French Français'})).toBeVisible()
   const paths = page.locator('.leaflet-overlay-pane path.leaflet-interactive')
   await expect(paths).toHaveCount(241)
@@ -23,11 +23,11 @@ test('language search recolors map and keeps source-specific Chinese categories'
 })
 
 test('country details include estimates, source note and explicit missing data', async ({page}) => {
-  await page.goto('/')
+  await page.goto('/lingua/')
   const search = page.getByRole('textbox',{name:'Find a country'})
   await search.fill('France')
   await page.locator('.country-list button').filter({hasText:'France'}).click()
-  const detail = page.getByRole('region',{name:'Selected country'})
+  const detail = page.getByRole('region',{name:'COUNTRY SPOTLIGHT'})
   await expect(detail).toContainText('66,323,362')
   await expect(detail).toContainText('97%')
   await expect(detail).toContainText('Unicode CLDR 48.2')
@@ -43,7 +43,7 @@ test('country details include estimates, source note and explicit missing data',
 })
 
 test('map hover and click are interactive', async ({page}) => {
-  await page.goto('/')
+  await page.goto('/lingua/')
   const paths = page.locator('.leaflet-overlay-pane path.leaflet-interactive')
   await expect(paths).toHaveCount(241)
   const country = paths.nth(160)
@@ -51,14 +51,15 @@ test('map hover and click are interactive', async ({page}) => {
   await country.dispatchEvent('mouseover')
   await expect(page.locator('.country-tooltip')).toBeVisible()
   await country.dispatchEvent('click')
-  await expect(page.getByRole('region',{name:'Selected country'})).toBeVisible()
+  await expect(page.getByRole('region',{name:'COUNTRY SPOTLIGHT'})).toBeVisible()
+  await expect(page.locator('.country-languages h4')).toHaveText('Languages spoken here')
   await page.getByRole('button',{name:'Zoom in',exact:true}).click()
   await page.getByRole('button',{name:'Reset map view',exact:true}).click()
 })
 
 test('mobile layout fits and selector supports keyboard escape and no results', async ({page}) => {
   await page.setViewportSize({width:390,height:844})
-  await page.goto('/')
+  await page.goto('/lingua/')
   await expect(page.getByRole('heading',{name:'French Français'})).toBeVisible()
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await page.getByRole('button',{name:/Explore a language/}).click()
@@ -77,7 +78,7 @@ test('mobile layout fits and selector supports keyboard escape and no results', 
 })
 
 test('production works offline after service worker precache, including reload and new language', async ({page,context}) => {
-  await page.goto('/')
+  await page.goto('/lingua/')
   await expect(page.getByText('Ready for offline exploration')).toBeVisible({timeout:20000})
   await page.evaluate(async()=>{await navigator.serviceWorker.ready})
   await page.reload()
@@ -94,7 +95,7 @@ test('production works offline after service worker precache, including reload a
 
 test('failed initial data request gives retry that recovers', async ({page}) => {
   await page.route('**/data/languages.json',route=>route.abort())
-  await page.goto('/')
+  await page.goto('/lingua/')
   await expect(page.getByRole('alert')).toContainText('could not be loaded')
   await page.unroute('**/data/languages.json')
   await page.getByRole('button',{name:'Try again'}).click()
