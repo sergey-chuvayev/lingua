@@ -1,0 +1,17 @@
+{
+  "cldr": {
+    "package": "cldr-core",
+    "version": "48.2.0",
+    "source": "https://github.com/unicode-org/cldr-json/tree/48.2.0/cldr-json/cldr-core"
+  },
+  "boundaries": {
+    "version": "5.1.2",
+    "source": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson"
+  },
+  "checksums": {
+    "data/source/territoryInfo.json": "b50369a0e1f5434c942dfe45064b39f488604ca0cedac5117e993248c19f2c0a",
+    "data/source/countries.geojson": "3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb",
+    "public/data/languages.json": "a4c9a0d4a34eb8eac550270ff91a10a5842b5c4ef68c0f78f4a88240e13fbde6",
+    "public/data/countries.geojson": "e93e3e4029388f1bccf0417aecd4cbe83fd869cabe2ae752050e0e2c1420461d"
+  }
+}

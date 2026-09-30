@@ -1,0 +1,4 @@
+export function Icon({name, size = 20}: {name: 'globe' | 'search' | 'arrow' | 'chevron' | 'info' | 'close' | 'reset' | 'check'; size?: number}) {
+  const paths = {globe: <><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 9h18M3 15h18"/></>, search: <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></>, arrow: <path d="M5 12h14m-5-5 5 5-5 5"/>, chevron: <path d="m7 9 5 5 5-5"/>, info: <><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></>, close: <path d="m6 6 12 12M6 18 18 6"/>, reset: <><path d="M4 9a8 8 0 1 1 0 6M4 4v5h5"/></>, check: <path d="m5 12 4 4L19 6"/>}
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>
+}
